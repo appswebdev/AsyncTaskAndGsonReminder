@@ -48,16 +48,14 @@ public class MainActivity extends AppCompatActivity {
         //Requires Internet Permission:
         //    <uses-permission android:name="android.permission.INTERNET"/>
 
-        new AsyncTask<Void, Void, Movie[]>() {
-            Movie[] movies;
-
+        new AsyncTask<Void, Void, List<Movie>>() {
+            List<Movie> movies;
             @Override
-            protected void onPostExecute(Movie[] movies) {
+            protected void onPostExecute(List<Movie> movies) {
                 //do work on Main UI Thread with movies.
             }
-
             @Override
-            protected Movie[] doInBackground(Void... voids) {
+            protected List<Movie> doInBackground(Void... voids) {
                 try {
                     URL url = new URL("http://api.themoviedb.org/3/discover/movie?api_key=b3b1492d3e91e9f9403a2989f3031b0c&primary_release_year=2017&sort_by=popularity.desc");
                     URLConnection con = url.openConnection();
@@ -69,22 +67,15 @@ public class MainActivity extends AppCompatActivity {
                     while ((line = (breader.readLine())) != null) {
                         builder.append(line);
                     }
-
                     String json = builder.toString();
                     JSONObject result = new JSONObject(json);
                     JSONArray moviesArr = result.getJSONArray("results");
                     String newJson = moviesArr.toString();
                     Gson gson = new Gson();
-                    movies = gson.fromJson(newJson, Movie[].class);
-
-                    List<Movie> movieList = Arrays.asList(movies);
-                    System.out.println(movieList);
-
-                } catch (MalformedURLException e) {
-                    e.printStackTrace();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                } catch (JSONException e) {
+                    Movie[] mArr = gson.fromJson(newJson, Movie[].class);
+                    movies = Arrays.asList(mArr); //Convert an Array to a list
+                    System.out.println(movies);
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
                 return movies;
